@@ -1,2 +1,103 @@
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --color-bg: #F6F6F6;
+  --color-surface: #FFFFFF;
+  --color-text: #111111;
+  --color-text-secondary: #444444;
+  --color-text-muted: #777777;
+  --color-border: #E1E1E1;
+  --color-focus: #8AB4FF;
+
+  --color-bg-rgb: 246, 246, 246;
+  --color-surface-rgb: 255, 255, 255;
+  --color-text-rgb: 17, 17, 17;
+  --color-text-secondary-rgb: 68, 68, 68;
+  --color-text-muted-rgb: 119, 119, 119;
+  --color-border-rgb: 225, 225, 225;
+  --color-focus-rgb: 138, 180, 255;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 30px;
+  --space-9: 40px;
+  --space-10: 48px;
+  --space-12: 60px;
+  --space-14: 80px;
+
+  --motion-ease: cubic-bezier(0.2, 0, 0.4, 1);
+  --motion-fast: 150ms;
+  --motion-standard: 200ms;
+  --motion-entrance: 400ms;
+
+  --ion-font-family: var(--font-sans);
+  --ion-background-color: var(--color-bg);
+  --ion-background-color-rgb: var(--color-bg-rgb);
+  --ion-text-color: var(--color-text);
+  --ion-text-color-rgb: var(--color-text-rgb);
+  --ion-border-color: var(--color-border);
+  --ion-card-background: var(--color-surface);
+  --ion-toolbar-background: var(--color-surface);
+  --ion-item-background: var(--color-surface);
+  --ion-placeholder-color: var(--color-text-muted);
+  --ion-placeholder-color-rgb: var(--color-text-muted-rgb);
+
+  --ion-color-primary: var(--color-text);
+  --ion-color-primary-rgb: var(--color-text-rgb);
+  --ion-color-primary-contrast: var(--color-bg);
+  --ion-color-primary-contrast-rgb: var(--color-bg-rgb);
+  --ion-color-primary-shade: var(--color-text);
+  --ion-color-primary-tint: var(--color-text);
+
+  --ion-color-dark: var(--color-text);
+  --ion-color-dark-rgb: var(--color-text-rgb);
+  --ion-color-dark-contrast: var(--color-bg);
+  --ion-color-dark-contrast-rgb: var(--color-bg-rgb);
+  --ion-color-dark-shade: var(--color-text);
+  --ion-color-dark-tint: var(--color-text);
+
+  --ion-color-light: var(--color-surface);
+  --ion-color-light-rgb: var(--color-surface-rgb);
+  --ion-color-light-contrast: var(--color-text);
+  --ion-color-light-contrast-rgb: var(--color-text-rgb);
+  --ion-color-light-shade: var(--color-surface);
+  --ion-color-light-tint: var(--color-surface);
+
+  --ion-color-medium: var(--color-text-secondary);
+  --ion-color-medium-rgb: var(--color-text-secondary-rgb);
+  --ion-color-medium-contrast: var(--color-bg);
+  --ion-color-medium-contrast-rgb: var(--color-bg-rgb);
+  --ion-color-medium-shade: var(--color-text-secondary);
+  --ion-color-medium-tint: var(--color-text-secondary);
+}
+
+.dark {
+  --color-bg: #111111;
+  --color-surface: #222222;
+  --color-text: #F6F6F6;
+  --color-text-secondary: #BBBBBB;
+  --color-text-muted: #BBBBBB;
+  --color-border: #333333;
+
+  --color-bg-rgb: 17, 17, 17;
+  --color-surface-rgb: 34, 34, 34;
+  --color-text-rgb: 246, 246, 246;
+  --color-text-secondary-rgb: 187, 187, 187;
+  --color-text-muted-rgb: 187, 187, 187;
+  --color-border-rgb: 51, 51, 51;
+}
