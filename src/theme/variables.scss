@@ -17,6 +17,8 @@
   --color-text-secondary: #444444;
   --color-text-muted: #777777;
   --color-border: #E1E1E1;
+  --color-shadow: 0 1px 3px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.05);
+  --color-track: #E1E1E1;
   --color-focus: #8AB4FF;
 
   --color-bg-rgb: 246, 246, 246;
@@ -91,13 +93,15 @@
   --color-surface: #222222;
   --color-text: #F6F6F6;
   --color-text-secondary: #BBBBBB;
-  --color-text-muted: #BBBBBB;
+  --color-text-muted: #777777;
   --color-border: #333333;
+  --color-shadow: 0 1px 3px rgba(0,0,0,.4), 0 8px 28px rgba(0,0,0,.35);
+  --color-track: #333333;
 
   --color-bg-rgb: 17, 17, 17;
   --color-surface-rgb: 34, 34, 34;
   --color-text-rgb: 246, 246, 246;
   --color-text-secondary-rgb: 187, 187, 187;
-  --color-text-muted-rgb: 187, 187, 187;
+  --color-text-muted-rgb: 119, 119, 119;
   --color-border-rgb: 51, 51, 51;
 }
