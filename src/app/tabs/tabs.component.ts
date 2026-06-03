@@ -35,36 +35,6 @@ import { IonTabs, IonTabBar, IonTabButton, IonLabel } from '@ionic/angular/stand
       </ion-tab-bar>
     </ion-tabs>
   `,
-  styles: [`
-    ion-tab-bar {
-      --background: var(--color-surface);
-      --border: 1px solid var(--color-border);
-      height: 76px;
-      transition: background var(--motion-standard) var(--motion-ease),
-                  border-color var(--motion-standard) var(--motion-ease);
-    }
-
-    ion-tab-button {
-      --color: var(--color-text-muted);
-      --color-selected: var(--color-text);
-      --padding-top: 0;
-      --padding-bottom: 0;
-      --ripple-color: transparent;
-      font-family: var(--font-sans);
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.03em;
-      transition: color var(--motion-fast) var(--motion-ease);
-    }
-
-    ion-tab-button svg {
-      width: 22px;
-      height: 22px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.6;
-      margin-bottom: 5px;
-    }
-  `],
+  styleUrls: ['./tabs.component.scss'],
 })
 export class TabsComponent {}
