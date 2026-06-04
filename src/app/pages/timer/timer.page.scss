@@ -164,24 +164,40 @@
   }
 }
 
+// --- Header ---
+
+.page-head {
+  transition: opacity 0.5s var(--motion-ease), transform 0.5s var(--motion-ease);
+
+  &.hidden {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+  }
+}
+
+// --- Header ---
+
+.page-head { display: flex; flex-direction: column; align-items: center; }
+.page-head .eyebrow { text-align: center; }
+
 // --- Mode toggle ---
 
 .mode-toggle {
-  display: flex;
+  display: inline-flex;
   border: 1px solid var(--color-border);
   border-radius: 30px;
   overflow: hidden;
-  transition: opacity 0.5s var(--motion-ease), transform 0.5s var(--motion-ease);
+  margin-top: var(--space-2);
 
-  &.hidden { opacity: 0; transform: translateY(-8px); pointer-events: none; height: 0; }
   &.disabled { opacity: 0.3; pointer-events: none; }
 
   button {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 6px var(--space-4);
+    padding: 8px var(--space-5);
     border: none;
     background: transparent;
     color: var(--color-text-muted);

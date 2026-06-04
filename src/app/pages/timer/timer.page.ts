@@ -11,6 +11,14 @@ type TimerMode = 'timer' | 'chrono';
   standalone: true,
   imports: [IonContent, SoundPickerComponent],
   template: `
+    <header class="page-head compact" [class.hidden]="state === 'running' || state === 'completed' || state === 'preparing'">
+      <span class="eyebrow">Session</span>
+      <div class="mode-toggle" [class.disabled]="state !== 'idle'">
+        <button [class.active]="mode === 'timer'" (click)="setMode('timer')">Minuteur</button>
+        <button [class.active]="mode === 'chrono'" (click)="setMode('chrono')">Chrono</button>
+      </div>
+    </header>
+
     <ion-content class="timer-content" [class.is-active]="state === 'running' || state === 'paused' || state === 'completed'">
       <div class="timer-wrap" [attr.data-state]="state">
 
@@ -23,10 +31,6 @@ type TimerMode = 'timer' | 'chrono';
         } @else {
 
           <div class="hero" [class.focused]="state !== 'idle'">
-            <div class="mode-toggle" [class.hidden]="state === 'running' || state === 'completed'" [class.disabled]="state !== 'idle'">
-              <button [class.active]="mode === 'timer'" (click)="setMode('timer')">Minuteur</button>
-              <button [class.active]="mode === 'chrono'" (click)="setMode('chrono')">Chrono</button>
-            </div>
             <svg class="timer-svg" [class.breathing]="state === 'running'" [class.completed]="state === 'completed'" viewBox="0 0 200 200">
               <circle class="glow" cx="100" cy="100" r="88" />
               <circle class="track" cx="100" cy="100" r="90" />

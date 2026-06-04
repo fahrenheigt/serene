@@ -90,18 +90,27 @@
 
 .dark {
   --color-bg: #111111;
-  --color-surface: #222222;
-  --color-text: #F6F6F6;
-  --color-text-secondary: #BBBBBB;
-  --color-text-muted: #777777;
-  --color-border: #333333;
-  --color-shadow: 0 1px 3px rgba(0,0,0,.4), 0 8px 28px rgba(0,0,0,.35);
-  --color-track: #333333;
+  --color-surface: #1A1A1A;
+  --color-text: #E0E0E0;
+  --color-text-secondary: #A0A0A0;
+  --color-text-muted: #666666;
+  --color-border: #2A2A2A;
+  --color-shadow: 0 1px 3px rgba(0,0,0,.5), 0 8px 28px rgba(0,0,0,.4);
+  --color-track: #2A2A2A;
 
   --color-bg-rgb: 17, 17, 17;
-  --color-surface-rgb: 34, 34, 34;
-  --color-text-rgb: 246, 246, 246;
-  --color-text-secondary-rgb: 187, 187, 187;
-  --color-text-muted-rgb: 119, 119, 119;
-  --color-border-rgb: 51, 51, 51;
+  --color-surface-rgb: 26, 26, 26;
+  --color-text-rgb: 224, 224, 224;
+  --color-text-secondary-rgb: 160, 160, 160;
+  --color-text-muted-rgb: 102, 102, 102;
+  --color-border-rgb: 42, 42, 42;
+
+  --ion-background-color: #111111;
+  --ion-background-color-rgb: 17, 17, 17;
+  --ion-text-color: #E0E0E0;
+  --ion-text-color-rgb: 224, 224, 224;
+  --ion-border-color: #2A2A2A;
+  --ion-card-background: #1A1A1A;
+  --ion-toolbar-background: #1A1A1A;
+  --ion-item-background: #1A1A1A;
 }
