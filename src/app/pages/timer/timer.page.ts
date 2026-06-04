@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
 
-type TimerState = 'idle' | 'running' | 'paused' | 'completed';
+type TimerState = 'idle' | 'preparing' | 'running' | 'paused' | 'completed';
 type TimerMode = 'timer' | 'chrono';
 
 @Component({
@@ -16,71 +16,79 @@ type TimerMode = 'timer' | 'chrono';
 
     <ion-content>
       <div class="timer-wrap">
-        <div class="mode-toggle" [class.disabled]="state !== 'idle'">
-          <button [class.active]="mode === 'timer'" (click)="setMode('timer')">Minuteur</button>
-          <button [class.active]="mode === 'chrono'" (click)="setMode('chrono')">Chrono</button>
-        </div>
-
-        <svg class="timer-svg" viewBox="0 0 200 200">
-          <circle class="track" cx="100" cy="100" r="90" />
-          @if (mode === 'chrono') {
-            @for (m of milestones; track m.minutes) {
-              <line class="milestone"
-                [class.reached]="elapsed >= m.minutes * 60"
-                [attr.x1]="m.x1" [attr.y1]="m.y1"
-                [attr.x2]="m.x2" [attr.y2]="m.y2" />
-            }
-          }
-          <circle class="progress" cx="100" cy="100" r="90"
-            [attr.stroke-dasharray]="circumference"
-            [attr.stroke-dashoffset]="dashOffset" />
-          <text class="value" x="100" y="98" text-anchor="middle">{{ display }}</text>
-          <text class="hint" x="100" y="120" text-anchor="middle">{{ hint }}</text>
-        </svg>
-
-        @if (mode === 'timer') {
-          <div class="duration-picker" [class.disabled]="state !== 'idle'">
-            @for (d of durations; track d) {
-              <button
-                [class.sel]="d === selectedMinutes"
-                (click)="selectDuration(d)">{{ d }}</button>
-            }
+        @if (state === 'preparing') {
+          <div class="prep-overlay">
+            <div class="prep-count">{{ prepRemaining }}</div>
+            <div class="prep-label">Préparez-vous</div>
+            <button class="prep-skip" (click)="skipPrep()">Passer</button>
           </div>
         } @else {
-          <div class="milestone-picker" [class.disabled]="state !== 'idle'">
-            @for (s of milestoneSteps; track s) {
-              <button
-                [class.sel]="s === selectedStep"
-                (click)="selectStep(s)">{{ s }}</button>
+          <div class="mode-toggle" [class.disabled]="state !== 'idle'">
+            <button [class.active]="mode === 'timer'" (click)="setMode('timer')">Minuteur</button>
+            <button [class.active]="mode === 'chrono'" (click)="setMode('chrono')">Chrono</button>
+          </div>
+
+          <svg class="timer-svg" viewBox="0 0 200 200">
+            <circle class="track" cx="100" cy="100" r="90" />
+            @if (mode === 'chrono') {
+              @for (m of milestones; track m.minutes) {
+                <line class="milestone"
+                  [class.reached]="elapsed >= m.minutes * 60"
+                  [attr.x1]="m.x1" [attr.y1]="m.y1"
+                  [attr.x2]="m.x2" [attr.y2]="m.y2" />
+              }
+            }
+            <circle class="progress" cx="100" cy="100" r="90"
+              [attr.stroke-dasharray]="circumference"
+              [attr.stroke-dashoffset]="dashOffset" />
+            <text class="value" x="100" y="98" text-anchor="middle">{{ display }}</text>
+            <text class="hint" x="100" y="120" text-anchor="middle">{{ hint }}</text>
+          </svg>
+
+          @if (mode === 'timer') {
+            <div class="duration-picker" [class.disabled]="state !== 'idle'">
+              @for (d of durations; track d) {
+                <button
+                  [class.sel]="d === selectedMinutes"
+                  (click)="selectDuration(d)">{{ d }}</button>
+              }
+            </div>
+          } @else {
+            <div class="milestone-picker" [class.disabled]="state !== 'idle'">
+              @for (s of milestoneSteps; track s) {
+                <button
+                  [class.sel]="s === selectedStep"
+                  (click)="selectStep(s)">{{ s }}</button>
+              }
+            </div>
+          }
+
+          <div class="controls">
+            @switch (state) {
+              @case ('idle') {
+                <button class="ctrl" (click)="start()">
+                  <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+              }
+              @case ('running') {
+                <button class="ctrl outline" (click)="pause()">
+                  <svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+                </button>
+              }
+              @case ('paused') {
+                <button class="ctrl" (click)="resume()">
+                  <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <button class="ctrl outline" (click)="stop()">
+                  <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                </button>
+              }
+              @case ('completed') {
+                <button class="ctrl done" (click)="stop()">Terminer</button>
+              }
             }
           </div>
         }
-
-        <div class="controls">
-          @switch (state) {
-            @case ('idle') {
-              <button class="ctrl" (click)="start()">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </button>
-            }
-            @case ('running') {
-              <button class="ctrl outline" (click)="pause()">
-                <svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-              </button>
-            }
-            @case ('paused') {
-              <button class="ctrl" (click)="resume()">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </button>
-              <button class="ctrl outline" (click)="stop()">
-                <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
-              </button>
-            }
-            @case ('completed') {
-              <button class="ctrl done" (click)="stop()">Terminer</button>
-            }
-          }
-        </div>
       </div>
     </ion-content>
   `,
@@ -92,6 +100,9 @@ export class TimerPage implements OnDestroy {
 
   readonly milestoneSteps = [1, 2, 5, 10];
   selectedStep = 5;
+
+  readonly prepDuration = 5;
+  prepRemaining = 5;
 
   mode: TimerMode = 'timer';
   selectedMinutes = 5;
@@ -171,6 +182,23 @@ export class TimerPage implements OnDestroy {
   }
 
   start(): void {
+    this.prepRemaining = this.prepDuration;
+    this.state = 'preparing';
+    this.intervalId = setInterval(() => {
+      this.prepRemaining--;
+      if (this.prepRemaining <= 0) {
+        this.clearInterval();
+        this.startSession();
+      }
+    }, 1000);
+  }
+
+  skipPrep(): void {
+    this.clearInterval();
+    this.startSession();
+  }
+
+  private startSession(): void {
     if (this.mode === 'timer') {
       this.remaining = this.total;
     } else {

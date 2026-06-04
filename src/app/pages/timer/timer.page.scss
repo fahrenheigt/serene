@@ -9,17 +9,56 @@
   min-height: 100%;
 }
 
+.prep-overlay {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  animation: prep-in var(--motion-entrance) var(--motion-ease);
+}
+
+.prep-count {
+  font-family: var(--font-mono);
+  font-size: 96px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.prep-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.prep-skip {
+  margin-top: var(--space-7);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 30px;
+  padding: var(--space-2) var(--space-6);
+  cursor: pointer;
+}
+
+@keyframes prep-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
 .mode-toggle {
   display: flex;
   border: 1px solid var(--color-border);
   border-radius: 30px;
   overflow: hidden;
-  transition: opacity var(--motion-standard) var(--motion-ease);
 
-  &.disabled {
-    opacity: 0.3;
-    pointer-events: none;
-  }
+  &.disabled { opacity: 0.3; pointer-events: none; }
 
   button {
     font-family: var(--font-mono);
@@ -33,10 +72,7 @@
     cursor: pointer;
     transition: all var(--motion-fast) var(--motion-ease);
 
-    &.active {
-      background: var(--color-text);
-      color: var(--color-bg);
-    }
+    &.active { background: var(--color-text); color: var(--color-bg); }
   }
 }
 
@@ -44,22 +80,14 @@
   width: 260px;
   height: 260px;
 
-  .track {
-    fill: none;
-    stroke: var(--color-track);
-    stroke-width: 4;
-  }
+  .track { fill: none; stroke: var(--color-track); stroke-width: 4; }
 
   .milestone {
     stroke: var(--color-text);
     stroke-width: 1.5;
     stroke-linecap: round;
     opacity: 0.12;
-    transition: opacity var(--motion-standard) var(--motion-ease);
-
-    &.reached {
-      opacity: 0.8;
-    }
+    &.reached { opacity: 0.8; }
   }
 
   .progress {
@@ -81,7 +109,6 @@
   }
 
   .hint {
-    font-family: var(--font-sans);
     font-size: 9px;
     fill: var(--color-text-muted);
     letter-spacing: 0.22em;
@@ -89,51 +116,15 @@
   }
 }
 
-.duration-picker {
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-  justify-content: center;
-  max-width: 280px;
-  transition: opacity var(--motion-standard) var(--motion-ease);
-
-  &.disabled {
-    opacity: 0.3;
-    pointer-events: none;
-  }
-
-  button {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 1px solid var(--color-border);
-    background: transparent;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    transition: all var(--motion-fast) var(--motion-ease);
-
-    &.sel {
-      background: var(--color-text);
-      color: var(--color-bg);
-      border-color: var(--color-text);
-    }
-  }
-}
-
+.duration-picker,
 .milestone-picker {
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
   justify-content: center;
   max-width: 280px;
-  transition: opacity var(--motion-standard) var(--motion-ease);
 
-  &.disabled {
-    opacity: 0.3;
-    pointer-events: none;
-  }
+  &.disabled { opacity: 0.3; pointer-events: none; }
 
   button {
     font-family: var(--font-mono);
@@ -147,11 +138,7 @@
     cursor: pointer;
     transition: all var(--motion-fast) var(--motion-ease);
 
-    &.sel {
-      background: var(--color-text);
-      color: var(--color-bg);
-      border-color: var(--color-text);
-    }
+    &.sel { background: var(--color-text); color: var(--color-bg); border-color: var(--color-text); }
   }
 }
 
@@ -173,29 +160,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform var(--motion-fast) var(--motion-ease),
-              background var(--motion-standard) var(--motion-ease);
 
-  &.outline {
-    background: transparent;
-    color: var(--color-text);
-  }
+  &.outline { background: transparent; color: var(--color-text); }
+  &:active { transform: scale(0.95); }
 
-  &:active {
-    transform: scale(0.95);
-  }
-
-  svg {
-    width: 26px;
-    height: 26px;
-    fill: currentColor;
-  }
+  svg { width: 26px; height: 26px; fill: currentColor; }
 
   &.done {
     width: auto;
     padding: 0 var(--space-7);
     border-radius: 32px;
-    font-family: var(--font-sans);
     font-weight: 600;
     font-size: 15px;
   }
