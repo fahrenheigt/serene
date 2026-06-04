@@ -122,6 +122,39 @@
   }
 }
 
+.milestone-picker {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 280px;
+  transition: opacity var(--motion-standard) var(--motion-ease);
+
+  &.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  button {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--motion-fast) var(--motion-ease);
+
+    &.sel {
+      background: var(--color-text);
+      color: var(--color-bg);
+      border-color: var(--color-text);
+    }
+  }
+}
+
 .controls {
   display: flex;
   gap: var(--space-4);

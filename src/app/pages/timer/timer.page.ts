@@ -46,6 +46,14 @@ type TimerMode = 'timer' | 'chrono';
                 (click)="selectDuration(d)">{{ d }}</button>
             }
           </div>
+        } @else {
+          <div class="milestone-picker" [class.disabled]="state !== 'idle'">
+            @for (s of milestoneSteps; track s) {
+              <button
+                [class.sel]="s === selectedStep"
+                (click)="selectStep(s)">{{ s }}</button>
+            }
+          </div>
         }
 
         <div class="controls">
@@ -82,21 +90,8 @@ export class TimerPage implements OnDestroy {
   readonly circumference = 2 * Math.PI * 90;
   readonly durations = [5, 10, 15, 20, 30];
 
-  readonly milestones = [5, 10, 15, 20, 25, 30].map(minutes => {
-    const maxMinutes = 30;
-    const angle = (minutes / maxMinutes) * 360 - 90;
-    const rad = angle * Math.PI / 180;
-    const cx = 100, cy = 100, r = 90;
-    const inner = r - 6;
-    const outer = r + 6;
-    return {
-      minutes,
-      x1: cx + inner * Math.cos(rad),
-      y1: cy + inner * Math.sin(rad),
-      x2: cx + outer * Math.cos(rad),
-      y2: cy + outer * Math.sin(rad),
-    };
-  });
+  readonly milestoneSteps = [1, 2, 5, 10];
+  selectedStep = 5;
 
   mode: TimerMode = 'timer';
   selectedMinutes = 5;
@@ -123,6 +118,26 @@ export class TimerPage implements OnDestroy {
     }
   }
 
+  get milestones() {
+    const maxMinutes = 30;
+    const steps: { minutes: number; x1: number; y1: number; x2: number; y2: number }[] = [];
+    for (let m = this.selectedStep; m <= maxMinutes; m += this.selectedStep) {
+      const angle = (m / maxMinutes) * 360 - 90;
+      const rad = angle * Math.PI / 180;
+      const cx = 100, cy = 100, r = 90;
+      const inner = r - 6;
+      const outer = r + 6;
+      steps.push({
+        minutes: m,
+        x1: cx + inner * Math.cos(rad),
+        y1: cy + inner * Math.sin(rad),
+        x2: cx + outer * Math.cos(rad),
+        y2: cy + outer * Math.sin(rad),
+      });
+    }
+    return steps;
+  }
+
   get dashOffset(): number {
     if (this.mode === 'chrono') {
       const maxDisplay = 30 * 60;
@@ -141,6 +156,11 @@ export class TimerPage implements OnDestroy {
     } else {
       this.remaining = this.total;
     }
+  }
+
+  selectStep(step: number): void {
+    if (this.state !== 'idle') return;
+    this.selectedStep = step;
   }
 
   selectDuration(minutes: number): void {

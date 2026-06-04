@@ -1,0 +1,40 @@
+.day-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: var(--space-6) 0 var(--space-1);
+
+  &:first-child {
+    margin-top: var(--space-2);
+  }
+}
+
+.session {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border);
+
+  .left {
+    .name {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .time {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-family: var(--font-mono);
+      margin-top: 2px;
+    }
+  }
+
+  .dur {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    color: var(--color-text-secondary);
+  }
+}
