@@ -7,16 +7,19 @@ import { IonContent } from '@ionic/angular/standalone';
   imports: [IonContent],
   template: `
     <header class="page-head">
-      <span class="eyebrow">Sessions passées</span>
-      <h1 class="page-title">Historique</h1>
+      <span class="eyebrow anim" style="--i:0">Sessions passées</span>
+      <h1 class="page-title anim" style="--i:1">Historique</h1>
     </header>
 
     <ion-content>
-      @for (group of groups; track group.label) {
-        <div class="day-label">{{ group.label }}</div>
-        @for (session of group.sessions; track session.time) {
-          <div class="session">
-            <div class="left">
+      @for (group of groups; track group.label; let gi = $index) {
+        <div class="day-label anim" [style.--i]="gi * 3 + 2">{{ group.label }}</div>
+        @for (session of group.sessions; track session.time; let si = $index) {
+          <div class="session anim" [style.--i]="gi * 3 + si + 3">
+            <div class="session-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>
+            </div>
+            <div class="session-info">
               <div class="name">{{ session.name }}</div>
               <div class="time">{{ session.time }}</div>
             </div>

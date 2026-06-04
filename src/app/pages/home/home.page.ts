@@ -1,39 +1,55 @@
-import { Component } from '@angular/core';
-import { IonContent } from '@ionic/angular/standalone';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { IonContent, ViewWillEnter } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [IonContent, RouterLink],
+  imports: [IonContent],
   template: `
     <header class="page-head">
-      <span class="eyebrow">Serene</span>
-      <h1 class="page-title">Aujourd'hui</h1>
+      <span class="eyebrow anim" style="--i:0">Serene</span>
+      <h1 class="page-title anim" style="--i:1">Aujourd'hui</h1>
     </header>
 
     <ion-content>
-      <p class="greeting">Bonjour, <em>Axel</em>.</p>
-      <p class="sub">Trois minutes suffisent pour revenir à soi.</p>
-
-      <button class="hero-start" [routerLink]="['/timer']">
-        <span class="hero-label">Commencer</span>
-        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        <span class="hero-big">Méditer</span>
-      </button>
-
-      <div class="stat-row">
-        <div class="stat-card">
-          <div class="stat-num">7</div>
-          <div class="stat-cap">Jours de suite</div>
+      <div class="home-wrap" [class.leaving]="leaving">
+        <div class="intro">
+          <p class="greeting anim" style="--i:2">Bonjour, <em>Axel</em>.</p>
+          <p class="sub anim" style="--i:3">Trois minutes suffisent pour revenir à soi.</p>
         </div>
-        <div class="stat-card">
-          <div class="stat-num">142</div>
-          <div class="stat-cap">Min ce mois</div>
+
+        <button class="hero-start anim" style="--i:4" (click)="goToTimer()">
+          <span class="hero-label">Commencer</span>
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <span class="hero-big">Méditer</span>
+        </button>
+
+        <div class="stat-row anim" style="--i:5">
+          <div class="stat-card">
+            <div class="stat-num">7</div>
+            <div class="stat-cap">Jours de suite</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">142</div>
+            <div class="stat-cap">Min ce mois</div>
+          </div>
         </div>
       </div>
     </ion-content>
   `,
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage {}
+export class HomePage implements ViewWillEnter {
+  private router = inject(Router);
+  leaving = false;
+
+  ionViewWillEnter(): void {
+    this.leaving = false;
+  }
+
+  goToTimer(): void {
+    this.leaving = true;
+    setTimeout(() => this.router.navigate(['/timer']), 400);
+  }
+}

@@ -1,5 +1,7 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
+import { AudioService, AmbientSound } from '../../services/audio.service';
+import { SoundPickerComponent } from '../../components/sound-picker/sound-picker.component';
 
 type TimerState = 'idle' | 'preparing' | 'running' | 'paused' | 'completed';
 type TimerMode = 'timer' | 'chrono';
@@ -7,15 +9,11 @@ type TimerMode = 'timer' | 'chrono';
 @Component({
   selector: 'app-timer',
   standalone: true,
-  imports: [IonContent],
+  imports: [IonContent, SoundPickerComponent],
   template: `
-    <header class="page-head">
-      <span class="eyebrow">Session</span>
-      <h1 class="page-title">{{ mode === 'timer' ? 'Minuteur' : 'Chrono' }}</h1>
-    </header>
+    <ion-content class="timer-content" [class.is-active]="state === 'running' || state === 'paused' || state === 'completed'">
+      <div class="timer-wrap" [attr.data-state]="state">
 
-    <ion-content>
-      <div class="timer-wrap">
         @if (state === 'preparing') {
           <div class="prep-overlay">
             <div class="prep-count">{{ prepRemaining }}</div>
@@ -23,45 +21,61 @@ type TimerMode = 'timer' | 'chrono';
             <button class="prep-skip" (click)="skipPrep()">Passer</button>
           </div>
         } @else {
-          <div class="mode-toggle" [class.disabled]="state !== 'idle'">
-            <button [class.active]="mode === 'timer'" (click)="setMode('timer')">Minuteur</button>
-            <button [class.active]="mode === 'chrono'" (click)="setMode('chrono')">Chrono</button>
+
+          <div class="hero" [class.focused]="state !== 'idle'">
+            <div class="mode-toggle" [class.hidden]="state === 'running' || state === 'completed'" [class.disabled]="state !== 'idle'">
+              <button [class.active]="mode === 'timer'" (click)="setMode('timer')">Minuteur</button>
+              <button [class.active]="mode === 'chrono'" (click)="setMode('chrono')">Chrono</button>
+            </div>
+            <svg class="timer-svg" [class.breathing]="state === 'running'" [class.completed]="state === 'completed'" viewBox="0 0 200 200">
+              <circle class="glow" cx="100" cy="100" r="88" />
+              <circle class="track" cx="100" cy="100" r="90" />
+              @if (mode === 'chrono') {
+                @for (m of milestones; track m.minutes) {
+                  <line class="milestone"
+                    [class.reached]="elapsed >= m.minutes * 60"
+                    [attr.x1]="m.x1" [attr.y1]="m.y1"
+                    [attr.x2]="m.x2" [attr.y2]="m.y2" />
+                }
+              }
+              <circle class="progress" cx="100" cy="100" r="90"
+                [attr.stroke-dasharray]="circumference"
+                [attr.stroke-dashoffset]="dashOffset" />
+              <text class="value" x="100" y="98" text-anchor="middle">{{ display }}</text>
+              <text class="hint" x="100" y="120" text-anchor="middle">{{ hint }}</text>
+            </svg>
+
+            <div class="picker-row" [class.hidden]="state === 'running' || state === 'completed'">
+              @if (mode === 'timer') {
+                <div class="duration-picker" [class.disabled]="state !== 'idle'">
+                  @for (d of durations; track d) {
+                    <button [class.sel]="d === selectedMinutes"
+                      (click)="selectDuration(d)">{{ d }}</button>
+                  }
+                </div>
+              } @else {
+                <div class="milestone-picker" [class.disabled]="state !== 'idle'">
+                  @for (s of milestoneSteps; track s) {
+                    <button [class.sel]="s === selectedStep"
+                      (click)="selectStep(s)">{{ s }}</button>
+                  }
+                </div>
+              }
+            </div>
           </div>
 
-          <svg class="timer-svg" viewBox="0 0 200 200">
-            <circle class="track" cx="100" cy="100" r="90" />
-            @if (mode === 'chrono') {
-              @for (m of milestones; track m.minutes) {
-                <line class="milestone"
-                  [class.reached]="elapsed >= m.minutes * 60"
-                  [attr.x1]="m.x1" [attr.y1]="m.y1"
-                  [attr.x2]="m.x2" [attr.y2]="m.y2" />
-              }
-            }
-            <circle class="progress" cx="100" cy="100" r="90"
-              [attr.stroke-dasharray]="circumference"
-              [attr.stroke-dashoffset]="dashOffset" />
-            <text class="value" x="100" y="98" text-anchor="middle">{{ display }}</text>
-            <text class="hint" x="100" y="120" text-anchor="middle">{{ hint }}</text>
-          </svg>
-
-          @if (mode === 'timer') {
-            <div class="duration-picker" [class.disabled]="state !== 'idle'">
-              @for (d of durations; track d) {
-                <button
-                  [class.sel]="d === selectedMinutes"
-                  (click)="selectDuration(d)">{{ d }}</button>
-              }
+          <div class="secondary sound" [class.hidden]="state === 'completed'">
+            <div class="section-label">Ambiance</div>
+            <app-sound-picker
+              [active]="audio.currentSound"
+              (select)="selectSound($event)" />
+            <div class="volume-row">
+              <span class="vol-label">Volume</span>
+              <input type="range" class="vol-slider"
+                [value]="audio.volume" min="0" max="1" step="0.05"
+                (input)="audio.setVolume(+$any($event.target).value)" />
             </div>
-          } @else {
-            <div class="milestone-picker" [class.disabled]="state !== 'idle'">
-              @for (s of milestoneSteps; track s) {
-                <button
-                  [class.sel]="s === selectedStep"
-                  (click)="selectStep(s)">{{ s }}</button>
-              }
-            </div>
-          }
+          </div>
 
           <div class="controls">
             @switch (state) {
@@ -95,6 +109,7 @@ type TimerMode = 'timer' | 'chrono';
   styleUrls: ['./timer.page.scss'],
 })
 export class TimerPage implements OnDestroy {
+  readonly audio = inject(AudioService);
   readonly circumference = 2 * Math.PI * 90;
   readonly durations = [5, 10, 15, 20, 30];
 
@@ -169,6 +184,10 @@ export class TimerPage implements OnDestroy {
     }
   }
 
+  selectSound(sound: AmbientSound): void {
+    this.audio.play(sound);
+  }
+
   selectStep(step: number): void {
     if (this.state !== 'idle') return;
     this.selectedStep = step;
@@ -184,11 +203,14 @@ export class TimerPage implements OnDestroy {
   start(): void {
     this.prepRemaining = this.prepDuration;
     this.state = 'preparing';
+    this.audio.playTick();
     this.intervalId = setInterval(() => {
       this.prepRemaining--;
       if (this.prepRemaining <= 0) {
         this.clearInterval();
         this.startSession();
+      } else {
+        this.audio.playTick();
       }
     }, 1000);
   }
@@ -204,6 +226,8 @@ export class TimerPage implements OnDestroy {
     } else {
       this.elapsed = 0;
     }
+    this.audio.playChimeUp();
+    this.audio.play(this.audio.currentSound);
     this.state = 'running';
     this.tick();
   }
@@ -220,6 +244,7 @@ export class TimerPage implements OnDestroy {
 
   stop(): void {
     this.clearInterval();
+    this.audio.stop();
     this.state = 'idle';
     if (this.mode === 'timer') {
       this.remaining = this.total;
@@ -240,6 +265,8 @@ export class TimerPage implements OnDestroy {
           this.remaining = 0;
           this.state = 'completed';
           this.clearInterval();
+          this.audio.stop();
+          this.audio.playChimeDown();
         }
       } else {
         this.elapsed++;
