@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { SettingsService } from '../../services/session.service';
 import { Settings } from '../../models/session.model';
 
+interface PickerOption { value: string | number; label: string; }
+
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -19,24 +21,31 @@ import { Settings } from '../../models/session.model';
         <div class="section anim" style="--i:2">
           <div class="section-label">Session</div>
           <div class="option-group">
-            <div class="option" (click)="cycleDuration()">
+            <div class="option" (click)="openPicker('defaultDuration', 'Durée par défaut', durationOptions)">
               <div class="option-text">
                 <div class="option-title">Durée par défaut</div>
                 <div class="option-val">{{ cfg.defaultDuration }} minutes</div>
               </div>
               <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
             </div>
-            <div class="option" (click)="cycleSound()">
+            <div class="option" (click)="openPicker('defaultSound', 'Ambiance par défaut', soundOptions)">
               <div class="option-text">
                 <div class="option-title">Ambiance par défaut</div>
                 <div class="option-val">{{ soundLabel }}</div>
               </div>
               <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
             </div>
-            <div class="option" (click)="cyclePickerStyle()">
+            <div class="option" (click)="openPicker('pickerStyle', 'Sélection du temps', pickerStyleOptions)">
               <div class="option-text">
                 <div class="option-title">Sélection du temps</div>
                 <div class="option-val">{{ cfg.pickerStyle === 'buttons' ? 'Boutons' : 'Curseur' }}</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="option" (click)="openPicker('breathCycle', 'Rythme de respiration', breathOptions)">
+              <div class="option-text">
+                <div class="option-title">Rythme de respiration</div>
+                <div class="option-val">{{ breathLabel }}</div>
               </div>
               <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
             </div>
@@ -87,48 +96,65 @@ import { Settings } from '../../models/session.model';
         </div>
       </div>
     </ion-content>
+
+    @if (picker) {
+      <div class="modal-backdrop" (click)="closePicker()"></div>
+      <div class="modal-sheet">
+        <div class="modal-title">{{ picker.title }}</div>
+        @for (opt of picker.options; track opt.value) {
+          <button class="modal-option" [class.selected]="opt.value === picker.current"
+            (click)="selectOption(opt.value)">
+            <span>{{ opt.label }}</span>
+            @if (opt.value === picker.current) {
+              <svg class="check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+            }
+          </button>
+        }
+      </div>
+    }
   `,
   styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage implements ViewWillEnter {
   private readonly settingsService = inject(SettingsService);
-
-  readonly durations = [5, 10, 15, 20, 30];
-  readonly sounds = [
-    { id: 'silence', label: 'Silence' },
-    { id: 'brown-noise', label: 'Bruit brun' },
-    { id: 'white-noise', label: 'Bruit blanc' },
-    { id: 'rain', label: 'Pluie' },
-    { id: 'ocean', label: 'Océan' },
-  ];
-
   cfg: Settings = this.settingsService.current;
+
+  picker: { key: string; title: string; options: PickerOption[]; current: string | number } | null = null;
+
+  readonly durationOptions: PickerOption[] = [5, 10, 15, 20, 30].map(d => ({ value: d, label: `${d} minutes` }));
+  readonly soundOptions: PickerOption[] = [
+    { value: 'silence', label: 'Silence' },
+    { value: 'brown-noise', label: 'Bruit brun' },
+    { value: 'white-noise', label: 'Bruit blanc' },
+    { value: 'rain', label: 'Pluie' },
+    { value: 'ocean', label: 'Océan' },
+  ];
+  readonly pickerStyleOptions: PickerOption[] = [
+    { value: 'buttons', label: 'Boutons' },
+    { value: 'slider', label: 'Curseur' },
+  ];
+  readonly breathOptions: PickerOption[] = [
+    { value: 4, label: '4s — Rapide (2s / 2s)' },
+    { value: 6, label: '6s — Cohérence (3s / 3s)' },
+    { value: 8, label: '8s — Calme (4s / 4s)' },
+    { value: 10, label: '10s — Profond (5s / 5s)' },
+    { value: 14, label: '14s — 4-7-8 relaxation' },
+  ];
 
   ionViewWillEnter(): void {
     this.cfg = this.settingsService.current;
   }
 
   get soundLabel(): string {
-    return this.sounds.find(s => s.id === this.cfg.defaultSound)?.label ?? 'Silence';
+    return this.soundOptions.find(s => s.value === this.cfg.defaultSound)?.label ?? 'Silence';
+  }
+
+  get breathLabel(): string {
+    return this.breathOptions.find(b => b.value === this.cfg.breathCycle)?.label ?? `${this.cfg.breathCycle}s`;
   }
 
   toggleTheme(): void {
-    const next = this.cfg.theme === 'light' ? 'dark' : 'light';
-    this.settingsService.update({ theme: next });
-    this.cfg = this.settingsService.current;
-  }
-
-  cycleDuration(): void {
-    const idx = this.durations.indexOf(this.cfg.defaultDuration);
-    const next = this.durations[(idx + 1) % this.durations.length];
-    this.settingsService.update({ defaultDuration: next });
-    this.cfg = this.settingsService.current;
-  }
-
-  cycleSound(): void {
-    const idx = this.sounds.findIndex(s => s.id === this.cfg.defaultSound);
-    const next = this.sounds[(idx + 1) % this.sounds.length].id;
-    this.settingsService.update({ defaultSound: next });
+    this.settingsService.update({ theme: this.cfg.theme === 'light' ? 'dark' : 'light' });
     this.cfg = this.settingsService.current;
   }
 
@@ -137,9 +163,18 @@ export class SettingsPage implements ViewWillEnter {
     this.cfg = this.settingsService.current;
   }
 
-  cyclePickerStyle(): void {
-    const next = this.cfg.pickerStyle === 'buttons' ? 'slider' : 'buttons';
-    this.settingsService.update({ pickerStyle: next });
+  openPicker(key: string, title: string, options: PickerOption[]): void {
+    this.picker = { key, title, options, current: (this.cfg as any)[key] };
+  }
+
+  selectOption(value: string | number): void {
+    if (!this.picker) return;
+    this.settingsService.update({ [this.picker.key]: value });
     this.cfg = this.settingsService.current;
+    this.closePicker();
+  }
+
+  closePicker(): void {
+    this.picker = null;
   }
 }

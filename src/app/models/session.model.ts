@@ -17,6 +17,7 @@ export interface Settings {
   pickerStyle: PickerStyle;
   showDurationPicker: boolean;
   showSoundPicker: boolean;
+  breathCycle: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -27,4 +28,5 @@ export const DEFAULT_SETTINGS: Settings = {
   pickerStyle: 'buttons',
   showDurationPicker: true,
   showSoundPicker: true,
+  breathCycle: 8,
 };

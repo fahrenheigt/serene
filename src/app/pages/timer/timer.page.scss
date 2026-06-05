@@ -124,7 +124,7 @@
   }
 
   &.breathing .glow {
-    animation: glow-pulse 4s ease-in-out infinite;
+    animation: glow-pulse var(--breath-cycle, 8s) ease-in-out infinite;
   }
 
   .track { fill: none; stroke: var(--color-track); stroke-width: 3; }

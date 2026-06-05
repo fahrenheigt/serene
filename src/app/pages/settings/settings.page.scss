@@ -39,26 +39,13 @@
   transition: transform 0.15s var(--motion-ease);
 
   &:active { transform: scale(0.98); }
-
-  & + .option {
-    border-top: 1px solid var(--color-border);
-  }
+  & + .option { border-top: 1px solid var(--color-border); }
 }
 
 .option-text {
   flex: 1;
-
-  .option-title {
-    font-size: 15px;
-    font-weight: 500;
-  }
-
-  .option-val {
-    font-size: 12px;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    margin-top: 2px;
-  }
+  .option-title { font-size: 15px; font-weight: 500; }
+  .option-val { font-size: 12px; color: var(--color-text-muted); font-family: var(--font-mono); margin-top: 2px; }
 }
 
 .chevron {
@@ -79,10 +66,7 @@
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.3s var(--motion-ease);
-
-  &.on {
-    background: var(--color-text);
-  }
+  &.on { background: var(--color-text); }
 }
 
 .toggle-knob {
@@ -91,8 +75,74 @@
   border-radius: 50%;
   background: var(--color-bg);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  .on & { transform: translateX(18px); }
+}
 
-  .on & {
-    transform: translateX(18px);
-  }
+// --- Modal sheet ---
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  animation: fade-in 0.2s ease;
+}
+
+.modal-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-radius: 20px 20px 0 0;
+  padding: var(--space-5) var(--space-5) calc(var(--space-7) + env(safe-area-inset-bottom, 0px));
+  animation: sheet-up 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: var(--space-4);
+  padding: 0 var(--space-1);
+}
+
+.modal-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-3) var(--space-1);
+  border: none;
+  background: none;
+  font-size: 15px;
+  color: var(--color-text);
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background var(--motion-fast) var(--motion-ease);
+
+  &.selected { font-weight: 600; }
+  &:active { background: var(--color-border); }
+
+  span { flex: 1; text-align: left; }
+}
+
+.check {
+  width: 18px;
+  height: 18px;
+  stroke: var(--color-text);
+  fill: none;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: none; }
 }

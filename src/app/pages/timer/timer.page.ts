@@ -33,7 +33,7 @@ type TimerMode = 'timer' | 'chrono';
         } @else {
 
           <div class="hero" [class.focused]="state !== 'idle'">
-            <svg class="timer-svg" [class.breathing]="state === 'running'" [class.completed]="state === 'completed'" viewBox="0 0 200 200">
+            <svg class="timer-svg" [class.breathing]="state === 'running'" [class.completed]="state === 'completed'" [style.--breath-cycle]="settings.current.breathCycle + 's'" viewBox="0 0 200 200">
               <circle class="glow" cx="100" cy="100" r="88" />
               <circle class="track" cx="100" cy="100" r="90" />
               @if (mode === 'chrono') {
