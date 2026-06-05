@@ -170,6 +170,16 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
   }
+
+  .breath-guide {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    fill: var(--color-text-secondary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: breath-text calc(var(--breath-cycle, 8s) / 2) ease-in-out infinite alternate;
+  }
 }
 
 // --- Header ---
@@ -378,4 +388,9 @@
 @keyframes circle-in {
   from { transform: scale(0.6); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes breath-text {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
 }

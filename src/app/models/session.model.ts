@@ -18,6 +18,7 @@ export interface Settings {
   showDurationPicker: boolean;
   showSoundPicker: boolean;
   breathCycle: number;
+  showBreathGuide: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -29,4 +30,5 @@ export const DEFAULT_SETTINGS: Settings = {
   showDurationPicker: true,
   showSoundPicker: true,
   breathCycle: 8,
+  showBreathGuide: true,
 };

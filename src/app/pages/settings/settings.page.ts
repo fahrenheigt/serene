@@ -65,6 +65,14 @@ interface PickerOption { value: string | number; label: string; }
                 <div class="toggle-knob"></div>
               </div>
             </div>
+            <div class="option" (click)="toggle('showBreathGuide')">
+              <div class="option-text">
+                <div class="option-title">Guide de respiration</div>
+              </div>
+              <div class="toggle" [class.on]="cfg.showBreathGuide">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -158,7 +166,7 @@ export class SettingsPage implements ViewWillEnter {
     this.cfg = this.settingsService.current;
   }
 
-  toggle(key: 'showDurationPicker' | 'showSoundPicker'): void {
+  toggle(key: 'showDurationPicker' | 'showSoundPicker' | 'showBreathGuide'): void {
     this.settingsService.update({ [key]: !this.cfg[key] });
     this.cfg = this.settingsService.current;
   }

@@ -48,8 +48,12 @@ type TimerMode = 'timer' | 'chrono';
               <circle class="progress" cx="100" cy="100" r="90"
                 [attr.stroke-dasharray]="circumference"
                 [attr.stroke-dashoffset]="dashOffset" />
-              <text class="value" x="100" y="98" text-anchor="middle">{{ display }}</text>
-              <text class="hint" x="100" y="120" text-anchor="middle">{{ hint }}</text>
+              <text class="value" x="100" y="96" text-anchor="middle">{{ display }}</text>
+              @if (state === 'running' && settings.current.showBreathGuide) {
+                <text class="breath-guide" x="100" y="118" text-anchor="middle">{{ breathPhase }}</text>
+              } @else {
+                <text class="hint" x="100" y="118" text-anchor="middle">{{ hint }}</text>
+              }
             </svg>
 
             @if (settings.current.showDurationPicker) {
@@ -155,10 +159,12 @@ export class TimerPage implements OnDestroy {
   remaining = this.settings.current.defaultDuration * 60;
   elapsed = 0;
   state: TimerState = 'idle';
+  breathPhase = '';
   private sessionElapsed = 0;
   private sessionStartTime = '';
 
   private intervalId: ReturnType<typeof setInterval> | null = null;
+  private breathId: ReturnType<typeof setInterval> | null = null;
 
   get display(): string {
     const seconds = this.mode === 'timer' ? this.remaining : this.elapsed;
@@ -276,21 +282,25 @@ export class TimerPage implements OnDestroy {
     this.audio.playChimeUp();
     this.audio.play(this.audio.currentSound);
     this.state = 'running';
+    this.startBreathCycle();
     this.tick();
   }
 
   pause(): void {
     this.state = 'paused';
     this.clearInterval();
+    this.stopBreathCycle();
   }
 
   resume(): void {
     this.state = 'running';
+    this.startBreathCycle();
     this.tick();
   }
 
   stop(): void {
     this.clearInterval();
+    this.stopBreathCycle();
     this.audio.stop();
     if (this.sessionElapsed >= 10) {
       this.saveSession(false);
@@ -316,6 +326,7 @@ export class TimerPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.clearInterval();
+    this.stopBreathCycle();
   }
 
   private tick(): void {
@@ -327,6 +338,7 @@ export class TimerPage implements OnDestroy {
           this.remaining = 0;
           this.state = 'completed';
           this.clearInterval();
+          this.stopBreathCycle();
           this.audio.stop();
           this.audio.playChimeDown();
           this.saveSession(true);
@@ -335,6 +347,23 @@ export class TimerPage implements OnDestroy {
         this.elapsed++;
       }
     }, 1000);
+  }
+
+  private startBreathCycle(): void {
+    this.stopBreathCycle();
+    const halfCycle = (this.settings.current.breathCycle / 2) * 1000;
+    this.breathPhase = 'Inspirez';
+    this.breathId = setInterval(() => {
+      this.breathPhase = this.breathPhase === 'Inspirez' ? 'Expirez' : 'Inspirez';
+    }, halfCycle);
+  }
+
+  private stopBreathCycle(): void {
+    if (this.breathId !== null) {
+      clearInterval(this.breathId);
+      this.breathId = null;
+    }
+    this.breathPhase = '';
   }
 
   private clearInterval(): void {
