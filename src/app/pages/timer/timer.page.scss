@@ -120,11 +120,19 @@
     stroke: var(--color-text);
     stroke-width: 0;
     opacity: 0;
-    transition: stroke-width 0.8s var(--motion-ease), opacity 0.8s var(--motion-ease);
   }
 
-  &.breathing .glow {
-    animation: glow-pulse var(--breath-cycle, 8s) ease-in-out infinite;
+  &.breathing .glow-outer {
+    animation: glow-outer var(--breath-cycle, 8s) cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  &.breathing .glow-inner {
+    animation: glow-inner var(--breath-cycle, 8s) cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation-delay: calc(var(--breath-cycle, 8s) * -0.5);
+  }
+
+  &.breathing .progress {
+    animation: stroke-breathe var(--breath-cycle, 8s) cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
   .track { fill: none; stroke: var(--color-track); stroke-width: 3; }
@@ -325,9 +333,25 @@
 
 // --- Keyframes ---
 
-@keyframes glow-pulse {
-  0%, 100% { opacity: 0.03; stroke-width: 20; }
-  50% { opacity: 0.07; stroke-width: 28; }
+// Inspire lent (0→45%) → expire plus rapide (45→100%)
+@keyframes glow-outer {
+  0% { opacity: 0.02; stroke-width: 14; }
+  45% { opacity: 0.07; stroke-width: 28; }
+  100% { opacity: 0.02; stroke-width: 14; }
+}
+
+// Décalé d'un demi-cycle, plus subtil
+@keyframes glow-inner {
+  0% { opacity: 0.01; stroke-width: 10; }
+  45% { opacity: 0.04; stroke-width: 20; }
+  100% { opacity: 0.01; stroke-width: 10; }
+}
+
+// Le trait de progression épaissit à l'inspire
+@keyframes stroke-breathe {
+  0% { stroke-width: 3; }
+  45% { stroke-width: 4.5; }
+  100% { stroke-width: 3; }
 }
 
 @keyframes complete-pop {

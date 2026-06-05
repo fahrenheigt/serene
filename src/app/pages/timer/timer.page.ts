@@ -34,7 +34,8 @@ type TimerMode = 'timer' | 'chrono';
 
           <div class="hero" [class.focused]="state !== 'idle'">
             <svg class="timer-svg" [class.breathing]="state === 'running'" [class.completed]="state === 'completed'" [style.--breath-cycle]="settings.current.breathCycle + 's'" viewBox="0 0 200 200">
-              <circle class="glow" cx="100" cy="100" r="88" />
+              <circle class="glow glow-outer" cx="100" cy="100" r="88" />
+              <circle class="glow glow-inner" cx="100" cy="100" r="85" />
               <circle class="track" cx="100" cy="100" r="90" />
               @if (mode === 'chrono') {
                 @for (m of milestones; track m.minutes) {
