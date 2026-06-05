@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { IonContent, ViewWillEnter } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-home',
@@ -27,11 +28,11 @@ import { Router } from '@angular/router';
 
         <div class="stat-row anim" style="--i:5">
           <div class="stat-card">
-            <div class="stat-num">7</div>
+            <div class="stat-num">{{ sessions.currentStreak }}</div>
             <div class="stat-cap">Jours de suite</div>
           </div>
           <div class="stat-card">
-            <div class="stat-num">142</div>
+            <div class="stat-num">{{ sessions.minutesThisMonth() }}</div>
             <div class="stat-cap">Min ce mois</div>
           </div>
         </div>
@@ -42,6 +43,7 @@ import { Router } from '@angular/router';
 })
 export class HomePage implements ViewWillEnter {
   private router = inject(Router);
+  readonly sessions = inject(SessionService);
   leaving = false;
 
   ionViewWillEnter(): void {

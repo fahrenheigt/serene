@@ -1,21 +1,27 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
-import { ThemeService } from './services/theme.service';
+import { SessionService, SettingsService } from './services/session.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet],
 })
-export class AppComponent {
-  private theme = inject(ThemeService);
+export class AppComponent implements OnInit {
+  private sessionService = inject(SessionService);
+  private settingsService = inject(SettingsService);
 
   constructor() {
     if (Capacitor.isNativePlatform()) {
       StatusBar.hide();
       StatusBar.setOverlaysWebView({ overlay: true });
     }
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.settingsService.load();
+    await this.sessionService.load();
   }
 }

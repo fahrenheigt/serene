@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { IonContent } from '@ionic/angular/standalone';
+import { Component, inject } from '@angular/core';
+import { IonContent, ViewWillEnter } from '@ionic/angular/standalone';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-stats',
@@ -15,15 +16,15 @@ import { IonContent } from '@ionic/angular/standalone';
       <div class="stats-wrap">
         <div class="highlight-row anim" style="--i:2">
           <div class="highlight">
-            <div class="highlight-num">23</div>
+            <div class="highlight-num">{{ s.totalSessions }}</div>
             <div class="highlight-cap">Sessions</div>
           </div>
           <div class="highlight">
-            <div class="highlight-num">4h32</div>
+            <div class="highlight-num">{{ s.totalFormatted }}</div>
             <div class="highlight-cap">Temps total</div>
           </div>
           <div class="highlight">
-            <div class="highlight-num">7</div>
+            <div class="highlight-num">{{ s.currentStreak }}</div>
             <div class="highlight-cap">Série actuelle</div>
           </div>
         </div>
@@ -44,11 +45,11 @@ import { IonContent } from '@ionic/angular/standalone';
           <div class="section-label">Durée moyenne</div>
           <div class="metric-row">
             <div class="metric">
-              <div class="metric-num">11:48</div>
+              <div class="metric-num">{{ avgThisMonth }}</div>
               <div class="metric-cap">Ce mois</div>
             </div>
             <div class="metric">
-              <div class="metric-num">09:30</div>
+              <div class="metric-num">{{ avgLastMonth }}</div>
               <div class="metric-cap">Mois dernier</div>
             </div>
           </div>
@@ -57,7 +58,7 @@ import { IonContent } from '@ionic/angular/standalone';
         <div class="section anim" style="--i:5">
           <div class="section-label">Meilleure série</div>
           <div class="best-streak">
-            <span class="best-num">14</span>
+            <span class="best-num">{{ s.bestStreak }}</span>
             <span class="best-cap">jours consécutifs</span>
           </div>
         </div>
@@ -66,14 +67,17 @@ import { IonContent } from '@ionic/angular/standalone';
   `,
   styleUrls: ['./stats.page.scss'],
 })
-export class StatsPage {
-  weekDays = [
-    { label: 'L', pct: 60 },
-    { label: 'M', pct: 80 },
-    { label: 'M', pct: 40 },
-    { label: 'J', pct: 100 },
-    { label: 'V', pct: 70 },
-    { label: 'S', pct: 20 },
-    { label: 'D', pct: 0 },
-  ];
+export class StatsPage implements ViewWillEnter {
+  readonly s = inject(SessionService);
+  weekDays: { label: string; pct: number }[] = [];
+  avgThisMonth = '--:--';
+  avgLastMonth = '--:--';
+
+  ionViewWillEnter(): void {
+    this.weekDays = this.s.weekChart();
+    const now = new Date();
+    this.avgThisMonth = this.s.avgDuration(now.getFullYear(), now.getMonth() + 1);
+    const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    this.avgLastMonth = this.s.avgDuration(prev.getFullYear(), prev.getMonth() + 1);
+  }
 }

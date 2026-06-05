@@ -1,6 +1,8 @@
 import { Component, OnDestroy, inject } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
 import { AudioService, AmbientSound } from '../../services/audio.service';
+import { SessionService, SettingsService } from '../../services/session.service';
+import { PickerStyle } from '../../models/session.model';
 import { SoundPickerComponent } from '../../components/sound-picker/sound-picker.component';
 
 type TimerState = 'idle' | 'preparing' | 'running' | 'paused' | 'completed';
@@ -49,25 +51,44 @@ type TimerMode = 'timer' | 'chrono';
               <text class="hint" x="100" y="120" text-anchor="middle">{{ hint }}</text>
             </svg>
 
-            <div class="picker-row" [class.hidden]="state === 'running' || state === 'completed'">
-              @if (mode === 'timer') {
-                <div class="duration-picker" [class.disabled]="state !== 'idle'">
-                  @for (d of durations; track d) {
-                    <button [class.sel]="d === selectedMinutes"
-                      (click)="selectDuration(d)">{{ d }}</button>
-                  }
-                </div>
+            @if (settings.current.showDurationPicker) {
+            <div class="picker-row" [class.hidden]="state !== 'idle'">
+              @if (pickerStyle === 'buttons') {
+                @if (mode === 'timer') {
+                  <div class="duration-picker" [class.disabled]="state !== 'idle'">
+                    @for (d of durations; track d) {
+                      <button [class.sel]="d === selectedMinutes"
+                        (click)="selectDuration(d)">{{ d }}</button>
+                    }
+                  </div>
+                } @else {
+                  <div class="milestone-picker" [class.disabled]="state !== 'idle'">
+                    @for (s of milestoneSteps; track s) {
+                      <button [class.sel]="s === selectedStep"
+                        (click)="selectStep(s)">{{ s }}</button>
+                    }
+                  </div>
+                }
               } @else {
-                <div class="milestone-picker" [class.disabled]="state !== 'idle'">
-                  @for (s of milestoneSteps; track s) {
-                    <button [class.sel]="s === selectedStep"
-                      (click)="selectStep(s)">{{ s }}</button>
+                <div class="slider-picker" [class.disabled]="state !== 'idle'">
+                  @if (mode === 'timer') {
+                    <span class="slider-val">{{ selectedMinutes }} min</span>
+                    <input type="range" class="picker-slider"
+                      [value]="selectedMinutes" min="1" max="60" step="1"
+                      (input)="onSliderDuration($event)" />
+                  } @else {
+                    <span class="slider-val">{{ selectedStep }} min</span>
+                    <input type="range" class="picker-slider"
+                      [value]="selectedStep" min="1" max="15" step="1"
+                      (input)="onSliderStep($event)" />
                   }
                 </div>
               }
             </div>
+            }
           </div>
 
+          @if (settings.current.showSoundPicker) {
           <div class="secondary sound" [class.hidden]="state === 'completed'">
             <div class="section-label">Ambiance</div>
             <app-sound-picker
@@ -80,6 +101,7 @@ type TimerMode = 'timer' | 'chrono';
                 (input)="audio.setVolume(+$any($event.target).value)" />
             </div>
           </div>
+          }
 
           <div class="controls">
             @switch (state) {
@@ -114,8 +136,11 @@ type TimerMode = 'timer' | 'chrono';
 })
 export class TimerPage implements OnDestroy {
   readonly audio = inject(AudioService);
+  private readonly sessions = inject(SessionService);
+  readonly settings = inject(SettingsService);
   readonly circumference = 2 * Math.PI * 90;
   readonly durations = [5, 10, 15, 20, 30];
+  get pickerStyle(): PickerStyle { return this.settings.current.pickerStyle; }
 
   readonly milestoneSteps = [1, 2, 5, 10];
   selectedStep = 5;
@@ -124,11 +149,13 @@ export class TimerPage implements OnDestroy {
   prepRemaining = 5;
 
   mode: TimerMode = 'timer';
-  selectedMinutes = 5;
-  total = 5 * 60;
-  remaining = 5 * 60;
+  selectedMinutes = this.settings.current.defaultDuration;
+  total = this.settings.current.defaultDuration * 60;
+  remaining = this.settings.current.defaultDuration * 60;
   elapsed = 0;
   state: TimerState = 'idle';
+  private sessionElapsed = 0;
+  private sessionStartTime = '';
 
   private intervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -197,6 +224,19 @@ export class TimerPage implements OnDestroy {
     this.selectedStep = step;
   }
 
+  onSliderDuration(event: Event): void {
+    if (this.state !== 'idle') return;
+    const val = +(event.target as HTMLInputElement).value;
+    this.selectedMinutes = val;
+    this.total = val * 60;
+    this.remaining = this.total;
+  }
+
+  onSliderStep(event: Event): void {
+    if (this.state !== 'idle') return;
+    this.selectedStep = +(event.target as HTMLInputElement).value;
+  }
+
   selectDuration(minutes: number): void {
     if (this.state !== 'idle') return;
     this.selectedMinutes = minutes;
@@ -230,6 +270,8 @@ export class TimerPage implements OnDestroy {
     } else {
       this.elapsed = 0;
     }
+    this.sessionElapsed = 0;
+    this.sessionStartTime = new Date().toISOString();
     this.audio.playChimeUp();
     this.audio.play(this.audio.currentSound);
     this.state = 'running';
@@ -249,6 +291,10 @@ export class TimerPage implements OnDestroy {
   stop(): void {
     this.clearInterval();
     this.audio.stop();
+    if (this.sessionElapsed >= 10) {
+      this.saveSession(false);
+    }
+    this.sessionElapsed = 0;
     this.state = 'idle';
     if (this.mode === 'timer') {
       this.remaining = this.total;
@@ -257,12 +303,23 @@ export class TimerPage implements OnDestroy {
     }
   }
 
+  private saveSession(completed: boolean): void {
+    this.sessions.add({
+      startTime: this.sessionStartTime,
+      endTime: new Date().toISOString(),
+      duration: this.sessionElapsed,
+      completed,
+      sound: this.audio.currentSound,
+    });
+  }
+
   ngOnDestroy(): void {
     this.clearInterval();
   }
 
   private tick(): void {
     this.intervalId = setInterval(() => {
+      this.sessionElapsed++;
       if (this.mode === 'timer') {
         this.remaining--;
         if (this.remaining <= 0) {
@@ -271,6 +328,7 @@ export class TimerPage implements OnDestroy {
           this.clearInterval();
           this.audio.stop();
           this.audio.playChimeDown();
+          this.saveSession(true);
         }
       } else {
         this.elapsed++;
