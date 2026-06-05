@@ -146,3 +146,37 @@
   from { transform: translateY(100%); }
   to { transform: none; }
 }
+
+// --- Name input ---
+
+.name-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  outline: none;
+  margin-bottom: var(--space-3);
+
+  &:focus { border-color: var(--color-text); }
+  &::placeholder { color: var(--color-text-muted); }
+}
+
+.name-save {
+  width: 100%;
+  padding: var(--space-3);
+  border: none;
+  border-radius: 12px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s var(--motion-ease);
+
+  &:active { transform: scale(0.98); }
+}

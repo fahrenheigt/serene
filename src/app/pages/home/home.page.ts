@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { IonContent, ViewWillEnter } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { SessionService } from '../../services/session.service';
+import { SessionService, SettingsService } from '../../services/session.service';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +16,7 @@ import { SessionService } from '../../services/session.service';
     <ion-content>
       <div class="home-wrap" [class.leaving]="leaving">
         <div class="intro">
-          <p class="greeting anim" style="--i:2">Bonjour, <em>Axel</em>.</p>
+          <p class="greeting anim" style="--i:2">Bonjour{{ userName ? ', ' : '' }}<em>{{ userName }}</em>{{ userName ? '.' : '.' }}</p>
           <p class="sub anim" style="--i:3">Trois minutes suffisent pour revenir à soi.</p>
         </div>
 
@@ -38,16 +38,61 @@ import { SessionService } from '../../services/session.service';
         </div>
       </div>
     </ion-content>
+
+    @if (showWelcome) {
+      <div class="modal-backdrop"></div>
+      <div class="welcome-sheet">
+        <div class="welcome-icon">
+          <svg viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="90" />
+            <circle cx="100" cy="100" r="74" />
+          </svg>
+        </div>
+        <div class="welcome-title">Bienvenue sur Serene</div>
+        <p class="welcome-sub">Comment souhaitez-vous être appelé ?</p>
+        <input class="welcome-input" type="text"
+          [value]="nameDraft"
+          (input)="nameDraft = $any($event.target).value"
+          (keydown.enter)="saveWelcome()"
+          placeholder="Votre prénom"
+          autofocus />
+        <button class="welcome-btn" (click)="saveWelcome()">Continuer</button>
+        <button class="welcome-skip" (click)="skipWelcome()">Passer</button>
+      </div>
+    }
   `,
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements ViewWillEnter {
   private router = inject(Router);
   readonly sessions = inject(SessionService);
+  private readonly settingsService = inject(SettingsService);
   leaving = false;
+  showWelcome = false;
+  nameDraft = '';
+  private welcomeDismissed = false;
+
+  get userName(): string { return this.settingsService.current.userName; }
 
   ionViewWillEnter(): void {
     this.leaving = false;
+    if (!this.settingsService.current.userName && !this.welcomeDismissed) {
+      this.showWelcome = true;
+    }
+  }
+
+  saveWelcome(): void {
+    const name = this.nameDraft.trim();
+    if (name) {
+      this.settingsService.update({ userName: name });
+    }
+    this.welcomeDismissed = true;
+    this.showWelcome = false;
+  }
+
+  skipWelcome(): void {
+    this.welcomeDismissed = true;
+    this.showWelcome = false;
   }
 
   goToTimer(): void {

@@ -88,6 +88,7 @@
   --ion-color-medium-tint: var(--color-text-secondary);
 }
 
+// Sombre — palette douce
 .dark {
   --color-bg: #111111;
   --color-surface: #1A1A1A;
@@ -113,4 +114,144 @@
   --ion-card-background: #1A1A1A;
   --ion-toolbar-background: #1A1A1A;
   --ion-item-background: #1A1A1A;
+}
+
+// Minuit — noir pur AMOLED
+.midnight {
+  --color-bg: #000000;
+  --color-surface: #0C0C0C;
+  --color-text: #D8D8D8;
+  --color-text-secondary: #909090;
+  --color-text-muted: #555555;
+  --color-border: #1A1A1A;
+  --color-shadow: none;
+  --color-track: #1A1A1A;
+
+  --color-bg-rgb: 0, 0, 0;
+  --color-surface-rgb: 12, 12, 12;
+  --color-text-rgb: 216, 216, 216;
+  --color-text-secondary-rgb: 144, 144, 144;
+  --color-text-muted-rgb: 85, 85, 85;
+  --color-border-rgb: 26, 26, 26;
+
+  --ion-background-color: #000000;
+  --ion-background-color-rgb: 0, 0, 0;
+  --ion-text-color: #D8D8D8;
+  --ion-text-color-rgb: 216, 216, 216;
+  --ion-border-color: #1A1A1A;
+  --ion-card-background: #0C0C0C;
+  --ion-toolbar-background: #0C0C0C;
+  --ion-item-background: #0C0C0C;
+}
+
+// Chaleureux — tons crème
+.warm {
+  --color-bg: #F5F0E8;
+  --color-surface: #FFFDF8;
+  --color-text: #2C2416;
+  --color-text-secondary: #6B5D4D;
+  --color-text-muted: #9C8E7C;
+  --color-border: #E4DDD2;
+  --color-shadow: 0 1px 3px rgba(44,36,22,.06), 0 8px 24px rgba(44,36,22,.05);
+  --color-track: #E4DDD2;
+
+  --color-bg-rgb: 245, 240, 232;
+  --color-surface-rgb: 255, 253, 248;
+  --color-text-rgb: 44, 36, 22;
+  --color-text-secondary-rgb: 107, 93, 77;
+  --color-text-muted-rgb: 156, 142, 124;
+  --color-border-rgb: 228, 221, 210;
+
+  --ion-background-color: #F5F0E8;
+  --ion-background-color-rgb: 245, 240, 232;
+  --ion-text-color: #2C2416;
+  --ion-text-color-rgb: 44, 36, 22;
+  --ion-border-color: #E4DDD2;
+  --ion-card-background: #FFFDF8;
+  --ion-toolbar-background: #FFFDF8;
+  --ion-item-background: #FFFDF8;
+}
+
+// Forêt — verts désaturés, retraite en nature
+.forest {
+  --color-bg: #121A14;
+  --color-surface: #1A241C;
+  --color-text: #C8D4CA;
+  --color-text-secondary: #8A9B8D;
+  --color-text-muted: #566258;
+  --color-border: #263028;
+  --color-shadow: 0 1px 3px rgba(0,0,0,.5), 0 8px 28px rgba(0,0,0,.4);
+  --color-track: #263028;
+
+  --color-bg-rgb: 18, 26, 20;
+  --color-surface-rgb: 26, 36, 28;
+  --color-text-rgb: 200, 212, 202;
+  --color-text-secondary-rgb: 138, 155, 141;
+  --color-text-muted-rgb: 86, 98, 88;
+  --color-border-rgb: 38, 48, 40;
+
+  --ion-background-color: #121A14;
+  --ion-background-color-rgb: 18, 26, 20;
+  --ion-text-color: #C8D4CA;
+  --ion-text-color-rgb: 200, 212, 202;
+  --ion-border-color: #263028;
+  --ion-card-background: #1A241C;
+  --ion-toolbar-background: #1A241C;
+  --ion-item-background: #1A241C;
+}
+
+// Crépuscule — bleus profonds violacés
+.dusk {
+  --color-bg: #12111A;
+  --color-surface: #1A1924;
+  --color-text: #CCCADB;
+  --color-text-secondary: #908DA5;
+  --color-text-muted: #5C5970;
+  --color-border: #28263A;
+  --color-shadow: 0 1px 3px rgba(0,0,0,.5), 0 8px 28px rgba(0,0,0,.4);
+  --color-track: #28263A;
+
+  --color-bg-rgb: 18, 17, 26;
+  --color-surface-rgb: 26, 25, 36;
+  --color-text-rgb: 204, 202, 219;
+  --color-text-secondary-rgb: 144, 141, 165;
+  --color-text-muted-rgb: 92, 89, 112;
+  --color-border-rgb: 40, 38, 58;
+
+  --ion-background-color: #12111A;
+  --ion-background-color-rgb: 18, 17, 26;
+  --ion-text-color: #CCCADB;
+  --ion-text-color-rgb: 204, 202, 219;
+  --ion-border-color: #28263A;
+  --ion-card-background: #1A1924;
+  --ion-toolbar-background: #1A1924;
+  --ion-item-background: #1A1924;
+}
+
+// Brume — gris bleutés éthérés
+.mist {
+  --color-bg: #EAECF0;
+  --color-surface: #F4F5F8;
+  --color-text: #2A2E36;
+  --color-text-secondary: #5C6270;
+  --color-text-muted: #8B91A0;
+  --color-border: #D4D7DE;
+  --color-shadow: 0 1px 3px rgba(42,46,54,.06), 0 8px 24px rgba(42,46,54,.05);
+  --color-track: #D4D7DE;
+
+  --color-bg-rgb: 234, 236, 240;
+  --color-surface-rgb: 244, 245, 248;
+  --color-text-rgb: 42, 46, 54;
+  --color-text-secondary-rgb: 92, 98, 112;
+  --color-text-muted-rgb: 139, 145, 160;
+  --color-border-rgb: 212, 215, 222;
+
+  --ion-background-color: #EAECF0;
+  --ion-background-color-rgb: 234, 236, 240;
+  --ion-text-color: #2A2E36;
+  --ion-text-color-rgb: 42, 46, 54;
+  --ion-border-color: #D4D7DE;
+  --ion-card-background: #F4F5F8;
+  --ion-toolbar-background: #F4F5F8;
+  --ion-item-background: #F4F5F8;
 }

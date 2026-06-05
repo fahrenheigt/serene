@@ -79,13 +79,19 @@ interface PickerOption { value: string | number; label: string; }
         <div class="section anim" style="--i:3">
           <div class="section-label">Apparence</div>
           <div class="option-group">
-            <div class="option" (click)="toggleTheme()">
+            <div class="option" (click)="openNameEditor()">
               <div class="option-text">
-                <div class="option-title">Mode sombre</div>
+                <div class="option-title">Votre prénom</div>
+                <div class="option-val">{{ cfg.userName || 'Non défini' }}</div>
               </div>
-              <div class="toggle" [class.on]="cfg.theme === 'dark'">
-                <div class="toggle-knob"></div>
+              <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="option" (click)="openPicker('theme', 'Thème', themeOptions)">
+              <div class="option-text">
+                <div class="option-title">Thème</div>
+                <div class="option-val">{{ themeLabel }}</div>
               </div>
+              <svg class="chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
             </div>
           </div>
         </div>
@@ -120,6 +126,20 @@ interface PickerOption { value: string | number; label: string; }
         }
       </div>
     }
+
+    @if (nameEditorOpen) {
+      <div class="modal-backdrop" (click)="closeName()"></div>
+      <div class="modal-sheet">
+        <div class="modal-title">Votre prénom</div>
+        <input class="name-input" type="text"
+          [value]="nameDraft"
+          (input)="nameDraft = $any($event.target).value"
+          (keydown.enter)="saveName()"
+          placeholder="Entrez votre prénom"
+          autofocus />
+        <button class="name-save" (click)="saveName()">Enregistrer</button>
+      </div>
+    }
   `,
   styleUrls: ['./settings.page.scss'],
 })
@@ -148,6 +168,15 @@ export class SettingsPage implements ViewWillEnter {
     { value: 10, label: '10s — Profond (5s / 5s)' },
     { value: 14, label: '14s — 4-7-8 relaxation' },
   ];
+  readonly themeOptions: PickerOption[] = [
+    { value: 'light', label: 'Clair' },
+    { value: 'dark', label: 'Sombre' },
+    { value: 'midnight', label: 'Minuit (AMOLED)' },
+    { value: 'warm', label: 'Chaleureux' },
+    { value: 'forest', label: 'Forêt' },
+    { value: 'dusk', label: 'Crépuscule' },
+    { value: 'mist', label: 'Brume' },
+  ];
 
   ionViewWillEnter(): void {
     this.cfg = this.settingsService.current;
@@ -161,9 +190,8 @@ export class SettingsPage implements ViewWillEnter {
     return this.breathOptions.find(b => b.value === this.cfg.breathCycle)?.label ?? `${this.cfg.breathCycle}s`;
   }
 
-  toggleTheme(): void {
-    this.settingsService.update({ theme: this.cfg.theme === 'light' ? 'dark' : 'light' });
-    this.cfg = this.settingsService.current;
+  get themeLabel(): string {
+    return this.themeOptions.find(t => t.value === this.cfg.theme)?.label ?? 'Sombre';
   }
 
   toggle(key: 'showDurationPicker' | 'showSoundPicker' | 'showBreathGuide'): void {
@@ -184,5 +212,23 @@ export class SettingsPage implements ViewWillEnter {
 
   closePicker(): void {
     this.picker = null;
+  }
+
+  nameEditorOpen = false;
+  nameDraft = '';
+
+  openNameEditor(): void {
+    this.nameDraft = this.cfg.userName;
+    this.nameEditorOpen = true;
+  }
+
+  saveName(): void {
+    this.settingsService.update({ userName: this.nameDraft.trim() });
+    this.cfg = this.settingsService.current;
+    this.nameEditorOpen = false;
+  }
+
+  closeName(): void {
+    this.nameEditorOpen = false;
   }
 }

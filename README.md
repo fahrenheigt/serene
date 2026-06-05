@@ -14,20 +14,43 @@ L'interface est conçue pour disparaître : quand la session démarre, tout s'ef
 
 ## Ce que fait Serene
 
-**Méditer** — Un minuteur configurable (5 à 30 minutes) ou un chronomètre libre. Un pré-timer de 5 secondes laisse le temps de s'installer. Un carillon mélodique marque le début et la fin de la session.
+**Méditer** — Un minuteur configurable (1 à 60 minutes) ou un chronomètre libre avec jalons visuels. Un pré-timer de 5 secondes avec décompte sonore laisse le temps de s'installer. Un carillon mélodique ascendant marque le début, un carillon descendant marque la fin.
 
-**Écouter** — Cinq ambiances sonores générées en temps réel par le navigateur, sans aucun fichier audio embarqué. Du bruit brun profond pour la concentration. De la pluie avec des gouttelettes qui tombent dans le champ stéréo. Un océan avec des vagues à rythmes irréguliers, de l'écume et du ressac. Tout est procédural, rien ne se répète.
+**Respirer** — Un guide de respiration visuel et textuel synchronisé sur le cercle du timer. Cinq rythmes disponibles : rapide (4s), cohérence cardiaque (6s), calme (8s), profond (10s) et relaxation 4-7-8 (14s). Le cercle respire avec un double halo concentrique et un trait de progression qui s'épaissit à l'inspire. Le texte "Inspirez" / "Expirez" alterne au centre. Désactivable dans les réglages.
 
-**Suivre** — Un historique des sessions passées et des statistiques simples : nombre de sessions, temps total, série de jours consécutifs, graphique de la semaine.
+**Écouter** — Cinq ambiances sonores générées en temps réel par le navigateur, sans aucun fichier audio embarqué :
 
-**Personnaliser** — Mode sombre, durée par défaut, volume des ambiances. Les préférences sont stockées localement sur l'appareil.
+- *Silence* — aucun son
+- *Bruit brun* — grave et enveloppant, filtré à 250 Hz
+- *Bruit blanc* — adouci en bruit rose par filtrage bandpass
+- *Pluie* — lit sonore continu, quatre types de gouttelettes, filets d'eau, tonnerre distant
+- *Océan* — quatre couches de vagues à périodes irrationnelles, écume, clapotis, ressac, rumble sub-bass
+
+Le volume est ajustable en temps réel pendant la session. L'ambiance peut être changée même quand le timer tourne.
+
+**Suivre** — Un historique des sessions passées groupées par jour, avec possibilité de supprimer des sessions individuelles. Des statistiques détaillées : nombre total de sessions, temps cumulé, série actuelle et meilleure série de jours consécutifs, graphique hebdomadaire animé, durée moyenne par mois.
+
+**Personnaliser** — Sept thèmes de couleurs, prénom personnalisé sur l'accueil, choix du mode de sélection du temps (boutons ou curseur), visibilité des éléments d'interface configurable. Toutes les préférences sont stockées localement sur l'appareil.
+
+## Thèmes
+
+| Thème | Ambiance |
+|-------|----------|
+| Clair | Gris clair, blanc, noir — minimaliste |
+| Sombre | Fond #111, texte doux — par défaut |
+| Minuit | Noir pur AMOLED, contrastes minimaux |
+| Chaleureux | Crème et brun — cosy et naturel |
+| Forêt | Verts désaturés sombres — retraite en nature |
+| Crépuscule | Bleu-violet profond — ciel de fin de journée |
+| Brume | Gris bleutés clairs — matin éthéré |
 
 ## Principes de conception
 
 - **Zéro requête externe** — Les polices (Inter, Playfair Display, JetBrains Mono) sont hébergées localement. Aucune donnée ne quitte l'appareil. Conformité RGPD par design.
-- **Audio procédural** — Le Web Audio API génère les ambiances en combinant des couches de bruit filtré, des enveloppes de vagues et des micro-événements aléatoires. Le résultat est organique et ne boucle jamais de façon perceptible.
-- **Animations intentionnelles** — Entrées en stagger, cercle qui respire pendant la méditation, transitions entre les pages, micro-interactions spring sur les boutons. Chaque mouvement a une raison d'être.
+- **Audio procédural** — Le Web Audio API génère les ambiances en combinant des couches de bruit filtré, des enveloppes de vagues et des micro-événements aléatoires. Buffers stéréo de 30 secondes avec crossfade de 4 secondes. Le résultat est organique et ne boucle jamais de façon perceptible.
+- **Animations intentionnelles** — Entrées en stagger, cercle qui respire avec double halo et trait adaptatif, transition morphing entre l'accueil et le timer, micro-interactions spring sur tous les boutons, modales bottom sheet animées. Chaque mouvement a une raison d'être.
 - **Mobile-first** — Plein écran sur Android, safe areas respectées, interface optimisée pour être utilisée d'une main.
+- **Persistance locale** — Architecture trois couches (StorageService, SessionService, SettingsService) avec BehaviorSubject pour la réactivité. Données stockées en localStorage, prêt pour migration vers Capacitor Preferences.
 
 ## Stack technique
 
@@ -37,6 +60,7 @@ L'interface est conçue pour disparaître : quand la session démarre, tout s'ef
 | UI | Ionic 8 |
 | Natif | Capacitor 8 (Android) |
 | Audio | Web Audio API (génération procédurale) |
+| Persistance | localStorage + BehaviorSubject |
 | Style | SCSS avec design tokens CSS custom |
 | Polices | Inter, Playfair Display, JetBrains Mono (locales) |
 
@@ -61,19 +85,22 @@ npx cap open android
 
 ```
 src/app/
+  models/
+    session.model.ts        Interfaces Session, Settings
   services/
-    audio.service.ts      Moteur audio procédural
-    theme.service.ts      Thème clair / sombre
+    storage.service.ts      Wrapper localStorage async
+    session.service.ts      SessionService + SettingsService
+    audio.service.ts        Moteur audio procédural
   components/
-    sound-picker/         Sélecteur d'ambiance sonore
+    sound-picker/           Sélecteur d'ambiance sonore
   pages/
-    home/                 Accueil
-    timer/                Minuteur et chronomètre
-    history/              Historique des sessions
-    stats/                Statistiques
-    settings/             Réglages
-    about/                À propos
-  tabs/                   Navigation
+    home/                   Accueil personnalisée
+    timer/                  Minuteur, chronomètre, guide de respiration
+    history/                Historique des sessions
+    stats/                  Statistiques de progression
+    settings/               Réglages avec modales
+    about/                  À propos
+  tabs/                     Navigation par onglets
 ```
 
 ## Licence

@@ -184,7 +184,14 @@ export class SettingsService {
     return updated;
   }
 
-  private applyTheme(theme: 'light' | 'dark'): void {
-    document.body.classList.toggle('dark', theme === 'dark');
+  private readonly themeClasses = ['dark', 'midnight', 'warm', 'forest', 'dusk', 'mist'];
+
+  private applyTheme(theme: string): void {
+    for (const cls of this.themeClasses) {
+      document.body.classList.remove(cls);
+    }
+    if (theme !== 'light') {
+      document.body.classList.add(theme);
+    }
   }
 }
